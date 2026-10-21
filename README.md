@@ -24,7 +24,7 @@ Start-Process report.html
 
 On macOS/Linux use `python3 -m venv .venv`, `.venv/bin/python -m pip install -r requirements.txt`, then `.venv/bin/python monitor.py`. Open `report.html` in your browser.
 
-`report.html` is a checked-in snapshot of the demonstrated sample results. Running the command regenerates CSV/JSON outputs; it does not automatically refresh the HTML. For a new input, inspect those generated outputs or explicitly rebuild the report. No server, account, or API key is required. Normal internet and electricity use still apply.
+`report.html` is a checked-in snapshot with all 600 scored test records, detector/outcome filters, a training-baseline inspector, and a CSV download. Running `monitor.py` regenerates CSV/JSON outputs. Run `python build_report.py` afterward to refresh the HTML; local regeneration does not automatically republish the portfolio. No server, account, or API key is required. Normal internet and electricity use still apply.
 
 ## Reproduced sample findings
 
@@ -56,3 +56,20 @@ daily_volume: synthetic record count; error_rate and missing_rate: proportions [
 Rules match this simple anomaly generator very well; that is why they outperform the model. Add subtle multivariate anomalies, real review labels, multiple seeds, time-ordered splits, and cost-sensitive threshold selection before drawing broader conclusions. Normal-only training/calibration is an educational assumption. Data is synthetic operational telemetry, not real banking transactions. No autonomous enforcement or production integration is implemented.
 
 Independent portfolio work developed with AI assistance. Contains no employer records, internal procedures, credentials, or confidential material. Synthetic benchmark results must not be presented as employer outcomes. Review and understand the implementation before representing it in an interview. MIT license covers this original code and synthetic data; separately imported source data retains its own terms.
+
+
+## Detailed project explanation and static datasets
+
+Read [PROJECT_WALKTHROUGH.md](docs/PROJECT_WALKTHROUGH.md) for the purpose, source, field-level generator, split strategy, rules, calculations, worked examples, conclusion, and interview explanation. All **2,200 synthetic input rows** are available in [data/](data), with split seeds and provenance in [manifest.json](data/manifest.json).
+
+To regenerate inputs and the interactive report after dependency setup:
+
+```shell
+python export_datasets.py
+python monitor.py
+python build_report.py
+python -m unittest discover -s tests -v
+node --test tests/dashboard.test.cjs
+```
+
+The Node test command requires Node.js and checks dashboard outcome counts and filtering against the stored Python results. It is not needed just to open the report. The deployed report is an interactive results snapshot, not a live production service.
